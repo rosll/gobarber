@@ -3,6 +3,7 @@ import { FiLogIn, FiMail, FiLock } from 'react-icons/fi'
 import { Form } from '@unform/web'
 import { FormHandles } from '@unform/core'
 import * as Yup from 'yup'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../../hooks/AuthContext'
 import { useToast } from '../../hooks/ToastContext'
 import getValidationErrors from '../../utils/getValidationErrors'
@@ -47,7 +48,11 @@ const Signin: React.FC = () => {
         formRef.current?.setErrors(errors)
       }
 
-      addToast()
+      addToast({
+        type: 'success',
+        title: 'Erro na autenticação',
+        description: 'Ocorreu um erro ao fazer login, cheque as credenciais'
+      })
     }
   }, [signIn, addToast])
   return (
@@ -62,10 +67,10 @@ const Signin: React.FC = () => {
           <Button type='submit'>Entrar</Button>
           <a href='forgot'>Esqueci minha senha</a>
         </Form>
-        <a href='login'>
+        <Link to='/signup'>
           <FiLogIn />
           Criar conta
-        </a>
+        </ Link>
       </Content>
       <Background />
     </Container>
