@@ -11,10 +11,25 @@ interface SignInCredentials {
   password: string
 }
 
+interface CadastroCredentials {
+  disciplina: string;
+  professor: string;
+  diasemana: string;
+  periodo: string;
+  horario: string;
+}
+
+interface CadastroAuthState {
+  cadastro: object;
+}
+
 interface AuthContextData {
   user: object;
   signIn(credentials: SignInCredentials): Promise<void>;
   signOut(): void
+  cadastro: object;
+  cadastrar(credentials: CadastroCredentials): Promise<void>;
+
 }
 
 export const AuthContext = createContext<AuthContextData>({} as AuthContextData)
@@ -30,6 +45,29 @@ export const AuthProvider: React.FC = ({ children }) => {
 
     return {} as AuthState
   })
+
+  const [info] = useState<CadastroAuthState>(() => {
+    const cadastro = localStorage.getItem('@GoBarber:cadastro')
+    
+    if ( cadastro ) {
+      return { cadastro: JSON.parse(cadastro) }
+    }
+    return {} as CadastroAuthState
+  })
+
+  const cadastrar = useCallback(async ({disciplina, professor, diasemana, periodo, horario }) => {
+    const response = {
+      disciplina,
+      professor,
+      diasemana,
+      periodo,
+      horario
+    }
+
+    localStorage.setItem('@GoBarber:cadastro', JSON.stringify(response))
+
+  }, [])
+
   const signIn = useCallback(async ({ email, password }) => {
     const response = await api.post('sessions', {
       email,
@@ -52,7 +90,7 @@ export const AuthProvider: React.FC = ({ children }) => {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user: data.user, signIn, signOut }}>
+    <AuthContext.Provider value={{ user: data.user, signIn, signOut, cadastrar, cadastro: info.cadastro }}>
       {children}
     </AuthContext.Provider>
   )
